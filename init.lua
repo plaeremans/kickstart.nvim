@@ -90,6 +90,18 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.g.clipboard = {
+  name = 'OSC 52',
+  copy = {
+    ['+'] = require('vim.ui.clipboard.osc52').copy '+',
+    ['*'] = require('vim.ui.clipboard.osc52').copy '*',
+  },
+  paste = {
+    ['+'] = require('vim.ui.clipboard.osc52').paste '+',
+    ['*'] = require('vim.ui.clipboard.osc52').paste '*',
+  },
+}
+
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -275,7 +287,47 @@ require('lazy').setup({
       },
     },
   },
-
+  { 'tpope/vim-fugitive' },
+  {
+    'slugbyte/whip.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim',
+    },
+    config = function()
+      local whip = require 'whip'
+      whip.setup {
+        -- its probs a good idea to have a dir dedicated to your scratchpads
+        dir = '/home/pieter/whip/',
+        autocreate = true, -- Autocreates a whip file if the results list is empty when using whip.find_file
+      }
+      vim.keymap.set('', '<leader>wo', whip.open, { desc = '[W]hip [O]pen' })
+      vim.keymap.set('', '<leader>wm', whip.make, { desc = '[W]hip [M]ake' })
+      vim.keymap.set('', '<leader>wd', whip.drop, { desc = '[W]hip [D]rop' })
+      vim.keymap.set('', '<leader>wf', whip.find_file, { desc = '[W]hip [F]ile Search' })
+      vim.keymap.set('', '<leader>wg', whip.find_grep, { desc = '[W]hip [G]rep Search' })
+    end,
+  },
+  {
+    'olimorris/codecompanion.nvim',
+    opts = {},
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function()
+      require('codecompanion').setup {
+        strategies = {
+          chat = {
+            adapter = 'gemini',
+          },
+          inline = {
+            adapter = 'gemini',
+          },
+        },
+      }
+    end,
+  },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
